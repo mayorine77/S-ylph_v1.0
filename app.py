@@ -4,7 +4,7 @@ import numpy as np
 import altair as alt
 
 # --- 画面設定 ---
-st.set_page_config(page_title="タテトラ2026 決定版", layout="wide")
+st.set_page_config(page_title="タテトラ2026", layout="wide")
 st.markdown("""
     <style>
     /* 全体表示の時はスクロールできるように設定 */
@@ -14,8 +14,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# 💡 ここを「v2」に変えて、Streamlitの古い記憶を強制リセットします！
 @st.cache_data
-def get_sim_data():
+def get_sim_data_v2():
     waves = [
         {"name": "G1 (STD)", "start": 15, "size": 196, "type": "STD"},
         {"name": "G2 (STD)", "start": 35, "size": 80,  "type": "STD"},
@@ -41,34 +42,31 @@ def get_sim_data():
                 s_e = st_t + p_p * 2
                 b_d, r_d = max(55, np.random.normal(80, 15)), max(35, np.random.normal(55, 10))
                 g1, g2, g3, g4 = s_e+t1, s_e+t1+b_d, s_e+t1+b_d+t2, s_e+t1+b_d+t2+r_d
-                # 復活：swim_in, swim_turn, swim_up
                 p = {"w_name": w["name"], "type": "STD", "swim_in": (st_t, st_t+2), "swim_turn": (st_t+p_p, st_t+p_p+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [(s_e, g1), (g2, g3)], "t_b_p": (g2, g2+2), "t_b": [], "bike": (g1, g2), "run": (g3, g4), "fin": (g4, g4+15)}
             elif w["type"] == "SP/CHA":
                 s_e = st_t + p_p * 1.0
                 b_d, r_d = max(25, np.random.normal(45, 8)), max(15, np.random.normal(25, 5))
                 b_st, b_en, r_st, r_en = s_e+t1, s_e+t1+b_d, s_e+t1+b_d+t2, s_e+t1+b_d+t2+r_d
-                # 復活：swim_in, swim_up
                 p = {"w_name": w["name"], "type": "SP/CHA", "swim_in": (st_t, st_t+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [], "t_b_p": None, "t_b": [(s_e, b_st), (b_en, r_st)], "bike": (b_st, b_en), "run": (r_st, r_en), "fin": (r_en, r_en+15)}
             else:
                 s_e = st_t + p_p * 0.5
                 b_d = max(2, np.random.normal(3, 1)) if "スイミー" in w["name"] else max(10, np.random.normal(20, 5))
                 r_d = max(1, np.random.normal(2, 0.5)) if "スイミー" in w["name"] else max(5, np.random.normal(12, 3))
                 b_st, b_en, r_st, r_en = s_e+t1, s_e+t1+b_d, s_e+t1+b_d+t2, s_e+t1+b_d+t2+r_d
-                # 復活：swim_in, swim_up
                 p = {"w_name": w["name"], "type": "Jr", "swim_in": (st_t, st_t+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [(s_e, b_st), (b_en, r_st)], "t_b_p": None, "t_b": [], "bike": (b_st, b_en), "run": (r_st, r_en), "fin": (r_en, r_en+15)}
             data.append(p)
     return data
 
-pts = get_sim_data()
-# サイドバーに「スイム地点A」を復活！
+# 💡 ここも「v2」を呼び出すように変更しました
+pts = get_sim_data_v2()
+
 loc = st.sidebar.selectbox("📌 地点切替", ["📊 全地点一括（モニタリング）", "スイム地点A", "スイムエリア", "トランジA", "トランジB", "バイクエリア", "ランエリア", "フィニッシュ"])
 
-all_groups = ["G1 (STD)", "G2 (STD)", "G3 (STD)", "G4 (STD)", "G5 (STD女子)", "G6 (SP男子)", "G7 (SP女子)", "G8 (CHA)", "G9 (JrA)", "G10 (JrB)", "G11 (スイミー)"]
+all_groups = ["G1 (STD)", "G2 (STD)", "G3 (STD)", "G4 (STD)", "G5 (STD女子)", "G6 (SP男子)", "G7 (SP男子)", "G8 (CHA)", "G9 (JrA)", "G10 (JrB)", "G11 (スイミー)"]
 ta_util = all_groups[:5] + all_groups[8:]
 tb_util = all_groups[5:8]
 
 def get_counts(target_m, l, p_list):
-    # ロジック復活！
     if l == "スイム地点A": 
         return {
             "①スタート(橙)": sum(1 for p in p_list if p.get("swim_in") and p["swim_in"][0] <= target_m <= p["swim_in"][1]),
@@ -94,7 +92,7 @@ def get_counts(target_m, l, p_list):
         return res
 
 palettes = {
-    "スイム地点A": (["①スタート(橙)", "②周回(水)", "③アップ(黄)"], ["#FF8C00", "#00BFFF", "#FFD700"]), # カラーパレット復活！
+    "スイム地点A": (["①スタート(橙)", "②周回(水)", "③アップ(黄)"], ["#FF8C00", "#00BFFF", "#FFD700"]),
     "スイムエリア": (["海中合計(水)"], ["#00BFFF"]),
     "トランジA": (ta_util, ["#1f77b4", "#ff7f0e", "#8a2be2", "#00ced1", "#d2691e", "#FF0000", "#3CB44B", "#FF1493"]),
     "トランジB": (["STD通過(青)"] + tb_util, ["#00008B", "#17becf", "#e377c2", "#bcbd22"]),
