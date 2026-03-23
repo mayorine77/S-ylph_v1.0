@@ -4,7 +4,7 @@ import numpy as np
 import altair as alt
 
 # --- 画面設定 ---
-st.set_page_config(page_title="タテトラ2026", layout="wide")
+st.set_page_config(page_title="タテトラ2026 決定版", layout="wide")
 st.markdown("""
     <style>
     /* 全体表示の時はスクロールできるように設定 */
@@ -14,9 +14,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 💡 ここを「v2」に変えて、Streamlitの古い記憶を強制リセットします！
+# 💡 キャッシュを強制リセットするために「v3」にしました
 @st.cache_data
-def get_sim_data_v2():
+def get_sim_data_v3():
     waves = [
         {"name": "G1 (STD)", "start": 15, "size": 196, "type": "STD"},
         {"name": "G2 (STD)", "start": 35, "size": 80,  "type": "STD"},
@@ -42,27 +42,30 @@ def get_sim_data_v2():
                 s_e = st_t + p_p * 2
                 b_d, r_d = max(55, np.random.normal(80, 15)), max(35, np.random.normal(55, 10))
                 g1, g2, g3, g4 = s_e+t1, s_e+t1+b_d, s_e+t1+b_d+t2, s_e+t1+b_d+t2+r_d
-                p = {"w_name": w["name"], "type": "STD", "swim_in": (st_t, st_t+2), "swim_turn": (st_t+p_p, st_t+p_p+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [(s_e, g1), (g2, g3)], "t_b_p": (g2, g2+2), "t_b": [], "bike": (g1, g2), "run": (g3, g4), "fin": (g4, g4+15)}
+                # ゲートデータ復活！
+                p = {"w_name": w["name"], "type": "STD", "swim_in": (st_t, st_t+2), "swim_turn": (st_t+p_p, st_t+p_p+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [(s_e, g1), (g2, g3)], "t_b_p": (g2, g2+2), "t_b": [], "bike": (g1, g2), "run": (g3, g4), "gate": [g1, g2, g3, g4], "fin": (g4, g4+15)}
             elif w["type"] == "SP/CHA":
                 s_e = st_t + p_p * 1.0
                 b_d, r_d = max(25, np.random.normal(45, 8)), max(15, np.random.normal(25, 5))
                 b_st, b_en, r_st, r_en = s_e+t1, s_e+t1+b_d, s_e+t1+b_d+t2, s_e+t1+b_d+t2+r_d
-                p = {"w_name": w["name"], "type": "SP/CHA", "swim_in": (st_t, st_t+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [], "t_b_p": None, "t_b": [(s_e, b_st), (b_en, r_st)], "bike": (b_st, b_en), "run": (r_st, r_en), "fin": (r_en, r_en+15)}
+                # ゲートデータ復活！
+                p = {"w_name": w["name"], "type": "SP/CHA", "swim_in": (st_t, st_t+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [], "t_b_p": None, "t_b": [(s_e, b_st), (b_en, r_st)], "bike": (b_st, b_en), "run": (r_st, r_en), "gate": [s_e, r_en], "fin": (r_en, r_en+15)}
             else:
                 s_e = st_t + p_p * 0.5
                 b_d = max(2, np.random.normal(3, 1)) if "スイミー" in w["name"] else max(10, np.random.normal(20, 5))
                 r_d = max(1, np.random.normal(2, 0.5)) if "スイミー" in w["name"] else max(5, np.random.normal(12, 3))
                 b_st, b_en, r_st, r_en = s_e+t1, s_e+t1+b_d, s_e+t1+b_d+t2, s_e+t1+b_d+t2+r_d
-                p = {"w_name": w["name"], "type": "Jr", "swim_in": (st_t, st_t+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [(s_e, b_st), (b_en, r_st)], "t_b_p": None, "t_b": [], "bike": (b_st, b_en), "run": (r_st, r_en), "fin": (r_en, r_en+15)}
+                # ゲートデータ復活！
+                p = {"w_name": w["name"], "type": "Jr", "swim_in": (st_t, st_t+2), "swim_up": (s_e, s_e+2), "swim_area": (st_t, s_e), "t_a": [(s_e, b_st), (b_en, r_st)], "t_b_p": None, "t_b": [], "bike": (b_st, b_en), "run": (r_st, r_en), "gate": [s_e, r_en], "fin": (r_en, r_en+15)}
             data.append(p)
     return data
 
-# 💡 ここも「v2」を呼び出すように変更しました
-pts = get_sim_data_v2()
+pts = get_sim_data_v3()
 
-loc = st.sidebar.selectbox("📌 地点切替", ["📊 全地点一括（モニタリング）", "スイム地点A", "スイムエリア", "トランジA", "トランジB", "バイクエリア", "ランエリア", "フィニッシュ"])
+# サイドバーに「ゲート」を復活！
+loc = st.sidebar.selectbox("📌 地点切替", ["📊 全地点一括（モニタリング）", "スイム地点A", "スイムエリア", "トランジA", "トランジB", "バイクエリア", "ランエリア", "ゲート", "フィニッシュ"])
 
-all_groups = ["G1 (STD)", "G2 (STD)", "G3 (STD)", "G4 (STD)", "G5 (STD女子)", "G6 (SP男子)", "G7 (SP男子)", "G8 (CHA)", "G9 (JrA)", "G10 (JrB)", "G11 (スイミー)"]
+all_groups = ["G1 (STD)", "G2 (STD)", "G3 (STD)", "G4 (STD)", "G5 (STD女子)", "G6 (SP男子)", "G7 (SP女子)", "G8 (CHA)", "G9 (JrA)", "G10 (JrB)", "G11 (スイミー)"]
 ta_util = all_groups[:5] + all_groups[8:]
 tb_util = all_groups[5:8]
 
@@ -80,11 +83,17 @@ def get_counts(target_m, l, p_list):
         res.update({g: sum(1 for p in p_list if p["w_name"] == g and any(s[0] <= target_m <= s[1] for s in p["t_b"])) for g in tb_util})
         return res
     if l == "フィニッシュ": return {g: sum(1 for p in p_list if p["w_name"] == g and p["fin"][0] <= target_m <= p["fin"][1]) for g in all_groups}
-    if l in ["バイクエリア", "ランエリア"]:
+    
+    # ゲートの計算ロジック復活！
+    if l in ["バイクエリア", "ランエリア", "ゲート"]:
         res = {"大人": 0, "JrA": 0, "JrB": 0, "スイミー": 0}
         for p in p_list:
-            target = p["bike"] if l == "バイクエリア" else p["run"]
-            if target[0] <= target_m <= target[1]:
+            is_in = False
+            if l == "バイクエリア" and p["bike"][0] <= target_m <= p["bike"][1]: is_in = True
+            elif l == "ランエリア" and p["run"][0] <= target_m <= p["run"][1]: is_in = True
+            elif l == "ゲート" and any(g-1 <= target_m <= g+1 for g in p["gate"]): is_in = True
+            
+            if is_in:
                 if "JrA" in p["w_name"]: res["JrA"] += 1
                 elif "JrB" in p["w_name"]: res["JrB"] += 1
                 elif "スイミー" in p["w_name"]: res["スイミー"] += 1
@@ -98,6 +107,7 @@ palettes = {
     "トランジB": (["STD通過(青)"] + tb_util, ["#00008B", "#17becf", "#e377c2", "#bcbd22"]),
     "バイクエリア": (["大人", "JrA", "JrB", "スイミー"], ["#9ACD32", "#FF0000", "#3CB44B", "#FF1493"]),
     "ランエリア": (["大人", "JrA", "JrB", "スイミー"], ["#FF8C00", "#FF0000", "#3CB44B", "#FF1493"]),
+    "ゲート": (["大人", "JrA", "JrB", "スイミー"], ["#D3D3D3", "#FF0000", "#3CB44B", "#FF1493"]), # ゲートの配色復活！
     "フィニッシュ": (all_groups, ["#1f77b4", "#ff7f0e", "#8a2be2", "#00ced1", "#d2691e", "#17becf", "#e377c2", "#bcbd22", "#FF0000", "#3CB44B", "#FF1493"]),
     "コース合算": (["大人(バイク)", "JrA(バイク)", "JrB(バイク)", "スイミー(バイク)", "大人(ラン)", "JrA(ラン)", "JrB(ラン)", "スイミー(ラン)"], ["#9ACD32", "#FF0000", "#3CB44B", "#FF1493", "#FF8C00", "#8B0000", "#006400", "#C71585"]),
     "トランジ合算": (ta_util + ["STD通過(青)"] + tb_util, ["#1f77b4", "#ff7f0e", "#8a2be2", "#00ced1", "#d2691e", "#FF0000", "#3CB44B", "#FF1493", "#00008B", "#17becf", "#e377c2", "#bcbd22"])
