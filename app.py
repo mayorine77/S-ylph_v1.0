@@ -5,15 +5,13 @@ import pandas as pd
 import numpy as np
 import altair as alt  # 修正済
 
-# --- 1. 設定項目（ここを自分のGitHub情報に書き換えてください） ---
-USER_NAME = "mayorine77"
-REPO_NAME = "S-ylph_1.0"
-ICON_FILE = "S-YLPH.jpg"
-# GitHub上のRaw画像URL（スマホアイコン用）
-ICON_URL = f"https://raw.githubusercontent.com/{USER_NAME}/{REPO_NAME}/main/{ICON_FILE}"
+# --- 1. ページ設定 (ここを最新版に差し替え) ---
+# GitHubの実際のファイル名「S-YLPH.jpg」に完全に合わせます
+ICON_FILE = "S-YLPH.jpg" 
+# 正しいRaw画像URL
+ICON_URL = "https://raw.githubusercontent.com/mayorine77/S-ylph_v1.0/main/S-YLPH.jpg"
 
-# --- 2. ページ設定 (アプリの最初に一度だけ記述) ---
-icon_image = "🏎️" # デフォルト
+icon_image = "🏎️"
 if os.path.exists(ICON_FILE):
     try:
         icon_image = Image.open(ICON_FILE)
@@ -25,6 +23,18 @@ st.set_page_config(
     page_icon=icon_image,
     layout="wide"
 )
+
+# --- 2. スタイル & スマホアイコン設定 ---
+st.markdown(f"""
+    <style>
+    [data-testid="stAppViewContainer"] {{ overflow-y: auto !important; }}
+    .main .block-container {{ padding: 1rem !important; }}
+    section[data-testid="stSidebar"] {{ width: 150px !important; }}
+    </style>
+
+    <link rel="apple-touch-icon" href="{ICON_URL}">
+    <link rel="icon" sizes="192x192" href="{ICON_URL}">
+    """, unsafe_allow_html=True)
 
 # --- 3. スタイル設定 & スマホ用アイコン設定 ---
 # CSSの { } を Pythonのf-stringで扱うために {{ }} にエスケープしています
