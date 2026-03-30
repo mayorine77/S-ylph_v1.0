@@ -3,12 +3,17 @@ from PIL import Image
 import os
 import pandas as pd
 import numpy as np
-import altair as alt  # 修正: altair を正しくインポート
+import altair as alt  # 修正済
 
-# --- 1. ページ設定 (アプリの最初に一度だけ記述) ---
+# --- 1. 設定項目（ここを自分のGitHub情報に書き換えてください） ---
+USER_NAME = "あなたのユーザー名"
+REPO_NAME = "あなたのリポジトリ名"
 ICON_FILE = "S-YLPH.jpg"
-icon_image = "🏎️" # デフォルト
+# GitHub上のRaw画像URL（スマホアイコン用）
+ICON_URL = f"https://raw.githubusercontent.com/{USER_NAME}/{REPO_NAME}/main/{ICON_FILE}"
 
+# --- 2. ページ設定 (アプリの最初に一度だけ記述) ---
+icon_image = "🏎️" # デフォルト
 if os.path.exists(ICON_FILE):
     try:
         icon_image = Image.open(ICON_FILE)
@@ -21,22 +26,25 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. スタイル設定 ---
+# --- 3. スタイル設定 & スマホ用アイコン設定 ---
+# CSSの { } を Pythonのf-stringで扱うために {{ }} にエスケープしています
 st.markdown(f"""
     <style>
-    [data-testid="stAppViewContainer"] { overflow-y: auto !important; }
+    /* 全体表示の時はスクロールできるように設定 */
+    [data-testid="stAppViewContainer"] {{ overflow-y: auto !important; }}
     .main .block-container {{ padding: 1rem !important; }}
     section[data-testid="stSidebar"] {{ width: 150px !important; }}
     </style>
 
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/あなたのユーザー名/リポジトリ名/main/S-YLPH.jpg">
-    <link rel="icon" sizes="192x192" href="https://raw.githubusercontent.com/あなたのユーザー名/リポジトリ名/main/S-YLPH.jpg">
+    <link rel="apple-touch-icon" href="{ICON_URL}">
+    <link rel="icon" sizes="192x192" href="{ICON_URL}">
     """, unsafe_allow_html=True)
+
 # タイトル表示
 st.title("S-YLPH")
 st.caption("Sector Yield & Level Prediction Hub - タテトラ2026 シミュレーター")
 
-# --- 3. データ生成ロジック (キャッシュ利用) ---
+# --- 4. データ生成ロジック (キャッシュ利用) ---
 @st.cache_data
 def get_sim_data_v3():
     waves = [
@@ -81,7 +89,7 @@ def get_sim_data_v3():
 
 pts = get_sim_data_v3()
 
-# --- 4. UI/ロジック ---
+# --- 5. UI/ロジック ---
 loc = st.sidebar.selectbox("📌 地点切替", ["📊 全地点一括（モニタリング）", "スイム地点A", "スイムエリア", "トランジA", "トランジB", "バイクエリア", "ランエリア", "ゲート", "フィニッシュ"])
 
 all_groups = ["G1 (STD)", "G2 (STD)", "G3 (STD)", "G4 (STD)", "G5 (STD女子)", "G6 (SP男子)", "G7 (SP女子)", "G8 (CHA)", "G9 (JrA)", "G10 (JrB)", "G11 (スイミー)"]
@@ -143,7 +151,7 @@ def create_chart(df_list, loc_name, title, h=300):
         color=alt.Color('項目:N', scale=alt.Scale(domain=dom, range=ran), legend=alt.Legend(orient='right', title=None, labelFontSize=11)),
     ).properties(height=h, title=title)
 
-# --- 5. メイン描画部 ---
+# --- 6. メイン描画部 ---
 if loc == "📊 全地点一括（モニタリング）":
     st.subheader("🌐 全エリア状況一括")
     df_s, df_t, df_br, df_f = [], [], [], []
