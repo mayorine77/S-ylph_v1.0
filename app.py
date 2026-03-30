@@ -5,10 +5,11 @@ import pandas as pd
 import numpy as np
 import altair as alt
 
-# --- 1. ページ設定・アイコン設定 ---
-# GitHubの実際のファイル名とRaw URL（スマホ用）
-ICON_FILE = "S-YLPH.jpg"
-ICON_URL = "https://raw.githubusercontent.com/mayorine77/S-ylph_v1.0/main/S-YLPH.jpg?v=4"
+# --- 1. ページ設定・アイコン設定 (PNG対応版) ---
+# GitHubの実際のファイル名「S-ylph.png」に完全に合わせます
+ICON_FILE = "S-ylph.png"
+# 正しいRaw画像URL (PNG、?v=5 でキャッシュを強制打破)
+ICON_URL = "https://raw.githubusercontent.com/mayorine77/S-ylph_v1.0/main/S-ylph.png?v=5"
 
 # タブ用アイコンの読み込み
 icon_image = "🏎️"
@@ -24,7 +25,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. スタイル設定 & スマホ用ホーム画面アイコン設定 ---
+# --- 2. スタイル設定 & スマホ用ホーム画面アイコン設定 (PNG対応版) ---
 st.markdown(f"""
     <style>
     /* 全体表示の時はスクロールできるように設定 */
@@ -35,7 +36,10 @@ st.markdown(f"""
 
     <link rel="apple-touch-icon" href="{ICON_URL}">
     <link rel="apple-touch-icon" sizes="180x180" href="{ICON_URL}">
-    <link rel="icon" type="image/jpeg" sizes="192x192" href="{ICON_URL}">
+    
+    <link rel="icon" type="image/png" sizes="192x192" href="{ICON_URL}">
+    
+    <link rel="shortcut icon" type="image/png" href="{ICON_URL}">
     """, unsafe_allow_html=True)
 
 # タイトル表示
