@@ -9,8 +9,7 @@ import altair as alt  # 修正済
 # GitHubの実際のファイル名「S-YLPH.jpg」に完全に合わせます
 ICON_FILE = "S-YLPH.jpg" 
 # 正しいRaw画像URL
-ICON_URL = "https://github.com/mayorine77/S-ylph_v1.0/blob/main/S-YLPH.jpg?raw=true"
-
+ICON_URL = "https://raw.githubusercontent.com/mayorine77/S-ylph_v1.0/main/S-YLPH.jpg?v=2"
 icon_image = "🏎️"
 if os.path.exists(ICON_FILE):
     try:
