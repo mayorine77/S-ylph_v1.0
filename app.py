@@ -22,14 +22,16 @@ st.set_page_config(
 )
 
 # --- 2. スタイル設定 ---
-st.markdown("""
+st.markdown(f"""
     <style>
     [data-testid="stAppViewContainer"] { overflow-y: auto !important; }
-    .main .block-container { padding: 1rem !important; }
-    section[data-testid="stSidebar"] { width: 200px !important; }
+    .main .block-container {{ padding: 1rem !important; }}
+    section[data-testid="stSidebar"] {{ width: 150px !important; }}
     </style>
-    """, unsafe_allow_html=True)
 
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/あなたのユーザー名/リポジトリ名/main/S-YLPH.jpg">
+    <link rel="icon" sizes="192x192" href="https://raw.githubusercontent.com/あなたのユーザー名/リポジトリ名/main/S-YLPH.jpg">
+    """, unsafe_allow_html=True)
 # タイトル表示
 st.title("S-YLPH")
 st.caption("Sector Yield & Level Prediction Hub - タテトラ2026 シミュレーター")
